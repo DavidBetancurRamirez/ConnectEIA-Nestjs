@@ -9,7 +9,7 @@ import { ResponsesSecurity } from 'src/common/decorators/responses-security.deco
 
 @ApiTags('user')
 @ResponsesSecurity()
-@Auth(Role.ADMIN)
+@Auth([Role.ADMIN])
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}

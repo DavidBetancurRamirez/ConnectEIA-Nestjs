@@ -35,7 +35,7 @@ export class AuthController {
   @Get('profile')
   @ApiOperation({ summary: 'Profile' })
   @ResponsesSecurity()
-  @Auth(Role.USER)
+  @Auth([Role.USER])
   profile(@ActiveUser() user: UserActiveInterface) {
     return this.authService.profile(user);
   }

@@ -20,8 +20,8 @@ export class User {
   @Column({ nullable: false, select: false })
   password: string;
 
-  @Column({ type: 'enum', enum: Role, default: Role.USER })
-  role: Role;
+  @Column({ type: 'simple-enum', enum: Role, default: [Role.USER], array: true })
+  roles: Role[];
 
   @DeleteDateColumn({ select: false })
   deletedAt: Date;

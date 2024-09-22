@@ -16,7 +16,7 @@ export class CreateUserDto {
   @MinLength(1)
   name?: string;
 
-  @Transform(({ value }) => value.trim())
-  @IsEnum(Role)
-  role?: Role;
+  @Transform(({ value }) => value.map((role: string) => role.trim()))
+  @IsEnum(Role, { each: true })
+  roles?: Role[];
 }
