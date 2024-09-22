@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
-import { Auth } from '../auth/decorators/auth.decorator';
-import { Role } from 'src/common/enums/rol.enum';
+import { Auth } from '../common/decorators/auth.decorator';
+import { Role } from '../common/enums/rol.enum';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserService } from './user.service';

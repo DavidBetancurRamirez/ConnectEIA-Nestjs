@@ -7,5 +7,5 @@ export class RegisterDto extends PartialType(LoginDto) {
   @Transform(({ value }) => value.trim())
   @IsString()
   @MinLength(1)
-  name: string;
+  name?: string;
 }

@@ -1,15 +1,11 @@
-import {
-  BadRequestException,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
-
 import { JwtService } from '@nestjs/jwt';
-import * as bcryptjs from 'bcryptjs';
 import { UserActiveInterface } from '../common/interfaces/user-active.interface';
+import { UserPayload, LoginResponse } from './interfaces/auth.interfaces';
+import { UserResponse } from '../common/interfaces/user-response.interface';
 
 @Injectable()
 export class AuthService {
@@ -18,48 +14,42 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async register({ name, email, password }: RegisterDto) {
-    const user = await this.userService.findOneByEmail(email);
-
-    if (user) {
-      throw new BadRequestException('User already exists');
-    }
-
-    await this.userService.create({
+  async register({ name, email, password }: RegisterDto): Promise<LoginResponse> {
+    const user = await this.userService.create({
       name,
       email,
-      password: await bcryptjs.hash(password, 10),
+      password
     });
-
-    return {
-      name,
-      email,
-    };
+    return this.generateTokens(user);
   }
 
-  async login({ email, password }: LoginDto) {
-    const response = "email or password incorrect";
+  async login(loginDto: LoginDto): Promise<LoginResponse> {
+    const user = await this.userService.validateUser(loginDto.email, loginDto.password);
+    return this.generateTokens(user);
+  }
 
-    const user = await this.userService.findByEmailWithPassword(email);
-    if (!user) {
-      throw new UnauthorizedException(response);
-    }
+  async profile(userActive: UserActiveInterface) {
+    return await this.userService.findOneByEmail(userActive.email);
+  }
 
-    const isPasswordValid = await bcryptjs.compare(password, user.password);
-    if (!isPasswordValid) {
-      throw new UnauthorizedException(response);
-    }
-
-    const payload = { email: user.email, roles: user.roles };
-    const token = await this.jwtService.signAsync(payload);
+  private generateTokens(user: UserResponse): LoginResponse {
+    const token = this.generateToken(user);
+    const refreshToken = this.generateRefreshToken(user);
 
     return {
       token,
-      email,
+      refreshToken,
+      data: user,
     };
   }
 
-  async profile({ email }: UserActiveInterface) {
-    return await this.userService.findOneByEmail(email);
+  private generateToken(user: UserResponse): string {
+    const payload: UserPayload = { email: user.email, roles: user.roles };
+    return this.jwtService.sign(payload);
+  }
+
+  private generateRefreshToken(user: UserResponse): string {
+    const payload = { email: user.email };
+    return this.jwtService.sign(payload, { expiresIn: '7d' });
   }
 }
