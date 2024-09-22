@@ -13,7 +13,18 @@ Plantilla usada para proyectos de nest.js
   npm i
 ```
 
-**Ejecutar:**
+**Variables necesarias en el .env para modo dev:**
+```
+  DB_HOST=
+  DB_PORT=
+  DB_USERNAME=
+  DB_PASSWORD=
+  DB_DATABASE=
+  DB_SSL=
+  JWT_SECRET=
+```
+
+**Ejecutar modo dev:**
 ```
   npm run dev
 ```
