@@ -13,7 +13,6 @@ export class UserService {
   ) {}
 
   async create(createUserDto: CreateUserDto) {
-    console.log(createUserDto)
     return await this.userRepository.save(createUserDto);
   }
 

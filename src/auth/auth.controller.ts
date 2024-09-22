@@ -6,28 +6,35 @@ import { AuthService } from './auth.service';
 import { Auth } from './decorators/auth.decorator';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
+import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ResponsesSecurity } from 'src/common/decorators/responses-security.decorator';
 
+@ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('register')
-  register(
-    @Body()
-    registerDto: RegisterDto,
-  ) {
+  @ApiOperation({ summary: 'Register' })
+  @ApiCreatedResponse({
+    description: 'The register has been successful.',
+  })
+  register(@Body() registerDto: RegisterDto) {
     return this.authService.register(registerDto);
   }
 
   @Post('login')
-  login(
-    @Body()
-    loginDto: LoginDto,
-  ) {
+  @ApiOperation({ summary: 'Login' })
+  @ApiCreatedResponse({
+    description: 'The login has been successful.',
+  })
+  login(@Body() loginDto: LoginDto) {
     return this.authService.login(loginDto);
   }
 
   @Get('profile')
+  @ApiOperation({ summary: 'Profile' })
+  @ResponsesSecurity()
   @Auth(Role.USER)
   profile(@ActiveUser() user: UserActiveInterface) {
     return this.authService.profile(user);

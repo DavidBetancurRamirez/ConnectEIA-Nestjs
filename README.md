@@ -41,18 +41,18 @@ Plantilla usada para proyectos de nest.js
 Unicamente explicación de que hace cada ruta, se ve mejor con swagger: *(/docs)*
 ### Auth
 **Opciones:**
-- (*/auth/login*) *Login*: Devuelve el token para autenticación
-- (*/auth/register*) *Register*: Crear nuevo usuario
-- (*/auth/profile*) *Profile*: Devuelve la info propia
+- **Post** *(/auth/register) Register*: Crear nuevo usuario
+- **Post** *(*/auth/login) Login*: Devuelve el token para autenticación
+- **Get** *(*/auth/profile) Profile*: Devuelve la info propia
 
 ---
 ### User
 **Opciones solo para usuario con rol admin:**
-- (*/user*) *FindAll*: Devuelve todos los usuarios
-- (*/user/:id*) *FindOne*: Devuelve el usuario con el id proporcionado
-- (*/user*) *CreateUser*: Crear un usuario
-- (*/user/:id*) *UpdateUser*: Actualizar un usuario
-- (*/user/:id*) *DeleteUser*: Eliminar un usuario
+- **Get** *(/user) FindAll*: Devuelve todos los usuarios
+- **Get** *(/user/:id) FindOne*: Devuelve el usuario con el id proporcionado
+- **Post** *(/user) CreateUser*: Crear un usuario
+- **Patch** *(/user/:id) UpdateUser*: Actualizar un usuario
+- **Delete** *(/user/:id) RemoveUser*: Eliminar un usuario
 
 
 ## Comandos Utiles

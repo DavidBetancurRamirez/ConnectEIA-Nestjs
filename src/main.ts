@@ -17,9 +17,10 @@ async function bootstrap() {
   );
 
   const config = new DocumentBuilder()
-    .setTitle("Plantilla")
+    .setTitle("Plantilla NESTJS")
     .setDescription("Plantilla para proyectos de nestjs")
     .setVersion("1.0")
+    .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup("docs", app, document);

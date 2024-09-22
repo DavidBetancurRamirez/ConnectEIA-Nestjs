@@ -9,6 +9,7 @@ import { LoginDto } from './dto/login.dto';
 
 import { JwtService } from '@nestjs/jwt';
 import * as bcryptjs from 'bcryptjs';
+import { UserActiveInterface } from '../common/interfaces/user-active.interface';
 
 @Injectable()
 export class AuthService {
@@ -37,14 +38,16 @@ export class AuthService {
   }
 
   async login({ email, password }: LoginDto) {
+    const response = "email or password incorrect";
+
     const user = await this.userService.findByEmailWithPassword(email);
     if (!user) {
-      throw new UnauthorizedException('email is wrong');
+      throw new UnauthorizedException(response);
     }
 
     const isPasswordValid = await bcryptjs.compare(password, user.password);
     if (!isPasswordValid) {
-      throw new UnauthorizedException('password is wrong');
+      throw new UnauthorizedException(response);
     }
 
     const payload = { email: user.email, role: user.role };
@@ -56,7 +59,7 @@ export class AuthService {
     };
   }
 
-  async profile({ email, role }: { email: string; role: string }) {
+  async profile({ email }: UserActiveInterface) {
     return await this.userService.findOneByEmail(email);
   }
 }
