@@ -1,9 +1,9 @@
-import { PartialType } from '@nestjs/swagger';
-import { Transform } from 'class-transformer';
-import { IsString, MinLength } from 'class-validator';
+import { IsOptional, IsString, MinLength } from 'class-validator';
 import { LoginDto } from './login.dto';
+import { Transform } from 'class-transformer';
 
-export class RegisterDto extends PartialType(LoginDto) {
+export class RegisterDto extends LoginDto {
+  @IsOptional()
   @Transform(({ value }) => value.trim())
   @IsString()
   @MinLength(1)

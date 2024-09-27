@@ -11,10 +11,10 @@ export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ nullable: true })
   name: string;
 
-  @Column({ unique: true, nullable: false })
+  @Column({ nullable: false, unique: true })
   email: string;
 
   @Column({ nullable: false, select: false })
@@ -23,6 +23,6 @@ export class User {
   @Column({ type: 'simple-enum', enum: Role, default: [Role.USER], array: true })
   roles: Role[];
 
-  @DeleteDateColumn({ select: false })
+  @DeleteDateColumn({ type: 'timestamp',  select: false })
   deletedAt: Date;
 }

@@ -14,7 +14,7 @@ export class UserService {
     private readonly userRepository: Repository<User>,
   ) {}
 
-  async create(createUserDto: CreateUserDto) {
+  async create(createUserDto: CreateUserDto): Promise<UserResponse> {
     await this.validateUserExist(createUserDto?.email);
 
     createUserDto.password = await this.hashPassword(createUserDto.password);
@@ -53,12 +53,12 @@ export class UserService {
     return await this.userRepository.find();
   }
 
-  async findOne(id: number) {
+  async findOne(id: number): Promise<UserResponse> {
     const user = await this.userRepository.findOneBy({ id });
     if (!user) {
       throw new BadRequestException('User not found');
     }
-    return user;
+    return this.toUserResponse(user);
   }
 
   async update(id: number, updateUserDto: UpdateUserDto): Promise<UserResponse> {
@@ -70,14 +70,9 @@ export class UserService {
       updateUserDto.password = await this.hashPassword(updateUserDto.password);
     }
 
-    const updatedUser = {
-      ...existingUser,
-      ...updateUserDto,
-    };
+    await this.userRepository.update(id, updateUserDto);
 
-    await this.userRepository.update(id, updatedUser);
-
-    return this.toUserResponse(updatedUser);
+    return await this.findOne(id);
   }
 
   async remove(id: number): Promise<{ message: string } | UserResponse> {

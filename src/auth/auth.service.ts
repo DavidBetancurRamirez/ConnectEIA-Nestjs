@@ -14,12 +14,8 @@ export class AuthService {
     private readonly tokenService: TokenService,
   ) {}
 
-  async register({ name, email, password }: RegisterDto): Promise<LoginResponse> {
-    const user = await this.userService.create({ // Modificar esto
-      name,
-      email,
-      password
-    });
+  async register(registerDto: RegisterDto): Promise<LoginResponse> {
+    const user = await this.userService.create(registerDto);
     return this.generateTokens(user);
   }
 
@@ -28,7 +24,7 @@ export class AuthService {
     return this.generateTokens(user);
   }
 
-  async profile(userActive: UserActiveInterface) {
+  async profile(userActive: UserActiveInterface): Promise<UserResponse | null> {
     return await this.userService.findOneByEmail(userActive.email);
   }
 
