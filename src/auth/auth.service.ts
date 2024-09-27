@@ -2,20 +2,20 @@ import { Injectable } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
-import { JwtService } from '@nestjs/jwt';
 import { UserActiveInterface } from '../common/interfaces/user-active.interface';
-import { UserPayload, LoginResponse } from './interfaces/auth.interfaces';
+import { LoginResponse } from './interfaces/auth.interfaces';
 import { UserResponse } from '../common/interfaces/user-response.interface';
+import { TokenService } from './token.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly userService: UserService,
-    private readonly jwtService: JwtService,
+    private readonly tokenService: TokenService,
   ) {}
 
   async register({ name, email, password }: RegisterDto): Promise<LoginResponse> {
-    const user = await this.userService.create({
+    const user = await this.userService.create({ // Modificar esto
       name,
       email,
       password
@@ -32,24 +32,15 @@ export class AuthService {
     return await this.userService.findOneByEmail(userActive.email);
   }
 
+  async refreshToken(refreshToken: string): Promise<LoginResponse> {
+    const decoded = this.tokenService.verifyRefreshToken(refreshToken);
+    const user = await this.userService.findOneByEmail(decoded?.email);
+    return this.generateTokens(user);
+  }
+
   private generateTokens(user: UserResponse): LoginResponse {
-    const token = this.generateToken(user);
-    const refreshToken = this.generateRefreshToken(user);
-
-    return {
-      token,
-      refreshToken,
-      data: user,
-    };
-  }
-
-  private generateToken(user: UserResponse): string {
-    const payload: UserPayload = { email: user.email, roles: user.roles };
-    return this.jwtService.sign(payload);
-  }
-
-  private generateRefreshToken(user: UserResponse): string {
-    const payload = { email: user.email };
-    return this.jwtService.sign(payload, { expiresIn: '7d' });
+    const accesToken = this.tokenService.generateAccessToken(user);
+    const refreshToken = this.tokenService.generateRefreshToken(user);
+    return { accesToken, refreshToken, data: user };
   }
 }

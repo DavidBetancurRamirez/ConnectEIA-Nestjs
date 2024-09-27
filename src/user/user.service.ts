@@ -37,7 +37,7 @@ export class UserService {
     return this.toUserResponse(user);
   }
 
-  async findOneByEmail(email: string) {
+  async findOneByEmail(email: string): Promise<UserResponse | null> {
     const user = await this.userRepository.findOneBy({ email });
     return user ? this.toUserResponse(user) : null;
   }
