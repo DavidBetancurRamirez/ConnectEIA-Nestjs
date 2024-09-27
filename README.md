@@ -19,7 +19,7 @@ Plantilla usada para proyectos de nest.js
   DB_PORT=
   DB_USERNAME=
   DB_PASSWORD=
-  DB_DATABASE=
+  DB_NAME=
   DB_SSL=
   JWT_SECRET=
 ```
@@ -43,7 +43,7 @@ Unicamente explicación de que hace cada ruta, se ve mejor con swagger: *(/docs)
 **Opciones:**
 - **Post** *(/auth/register) Registe:** Crear nuevo usuario
 - **Post** *(*/auth/login) Login:* Devuelve el token para autenticación
-- **Get** *(*/auth/profile) Profile:* Devuelve la info propia
+- **Get** *(*/auth/profile) Profile:* Devuelve la info del usuario que hace la peticion
 
 ---
 ### User
