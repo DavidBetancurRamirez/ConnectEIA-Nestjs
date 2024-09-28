@@ -17,8 +17,8 @@ async function bootstrap() {
   );
 
   const config = new DocumentBuilder()
-    .setTitle("Plantilla NESTJS")
-    .setDescription("Plantilla para proyectos de nestjs")
+    .setTitle("ConnectEIA")
+    .setDescription("Backend para el proyecto de ConnectEIA")
     .setVersion("1.0")
     .addBearerAuth()
     .build();
