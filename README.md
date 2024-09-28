@@ -1,5 +1,14 @@
-# Plantilla Nest.js
-Plantilla usada para proyectos de nest.js
+# ConnectEIA
+Backend para el proyecto de ConnectEIA
+
+
+## Diagramas
+**Diagrama Entidad-Relacion**
+![Diagrama Entidad-Relacion](./images/DiagramaER.jpg)
+
+---
+**Diagrama Base de datos**
+![Diagrama Base de datos](./images/DiagramaBD.jpg)
 
 
 ## Ejecutar
@@ -60,6 +69,15 @@ npm i
 - **Patch** *(/user/:id) UpdateUser:* Actualizar un usuario
 - **Delete** *(/user/:id) RemoveUser:* Eliminar un usuario
 
+---
+### Event
+
+---
+### Product
+
+---
+### Reservation
+---
 
 ## Info util
 ### Crear nuevo proyecto basado en esta plantilla
