@@ -1,4 +1,4 @@
-import { UserResponse } from "../../common/interfaces/user-response.interface";
+import { UserResponse } from "../../common/interfaces/user.interface";
 
 export interface UserPayload {
   email: string;

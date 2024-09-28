@@ -2,7 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { UserPayload } from './interfaces/auth.interfaces';
-import { UserResponse } from '../common/interfaces/user-response.interface';
+import { UserResponse } from '../common/interfaces/user.interface';
 
 @Injectable()
 export class TokenService {

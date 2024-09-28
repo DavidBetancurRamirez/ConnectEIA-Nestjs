@@ -22,6 +22,7 @@ Plantilla usada para proyectos de nest.js
   DB_NAME=
   DB_SSL=
   JWT_SECRET=
+  JWT_REFRESH_SECRET=
 ```
 
 **Ejecutar modo dev:**
@@ -34,29 +35,43 @@ Plantilla usada para proyectos de nest.js
 - *Documentación con swagger*
 - *Tipos de usuarios*
   1. **user:** por defecto
-  2. **admin:** permisos para hacer todo
+  2. **admin:** permiso para hacer todo
 
 
 ## Modulos
-Unicamente explicación de que hace cada ruta, se ve mejor con swagger: *(/docs)*
 ### Auth
-**Opciones:**
-- **Post** *(/auth/register) Registe:** Crear nuevo usuario
-- **Post** *(*/auth/login) Login:* Devuelve el token para autenticación
-- **Get** *(*/auth/profile) Profile:* Devuelve la info del usuario que hace la peticion
+**Rutas:**
+- **Post** *(/auth/register) Register:* Crear nuevo usuario y devuelver sus credenciales
+- **Post** *(/auth/login) Login:* Devuelver las credenciales; por autenticación email-password
+- **Post** *(/auth/refresh-token) Refresh Token:* Devuelver las credenciales; con refreshToken
 
 ---
 ### User
-**Opciones solo para usuario con rol admin:**
-- **Get** *(/user) FindAll:* Devuelve todos los usuarios
+**Rutas:**
+*Requieren Rol user o admin*
+- **Get** *(/user) Profile:* Devuelve la informacion del usuario que hace la petición
+- **Patch** *(/user) Update:* Actualizar al usuario que hace la petición
+- **Delete** *(/user/:id) Remove:* Eliminar al usuario que hace la petición
+
+*Requieren Rol admin*
+- **Get** *(/user/users) FindAll:* Devuelve todos los usuarios; ordenados por id
 - **Get** *(/user/:id) FindOne:* Devuelve el usuario con el id proporcionado
 - **Post** *(/user) CreateUser:* Crear un usuario
 - **Patch** *(/user/:id) UpdateUser:* Actualizar un usuario
 - **Delete** *(/user/:id) RemoveUser:* Eliminar un usuario
 
 
-## Comandos Utiles
+## Info util
 **Generar un modulo por comandos:**
 ```
   nest g res name --no-spec
+```
+
+**Para implementar la autenticación en otro modulo:**
+*example.module.ts*
+```
+  @Module({
+    imports: [AuthModule],
+  })
+  export class ExampleModule {}
 ```

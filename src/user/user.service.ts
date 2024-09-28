@@ -5,13 +5,14 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import * as bcryptjs from 'bcryptjs';
-import { UserResponse } from '../common/interfaces/user-response.interface';
+import { UserResponse, UserActiveInterface } from '../common/interfaces/user.interface';
+import { UpdateMeDto } from './dto/update-me.dto';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
+    private readonly userRepository: Repository<User>
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<UserResponse> {
@@ -50,7 +51,11 @@ export class UserService {
   }
 
   async findAll() {
-    return await this.userRepository.find();
+    return await this.userRepository.find({
+      order: {
+        id: 'ASC'
+      }
+    });
   }
 
   async findOne(id: number): Promise<UserResponse> {
@@ -59,6 +64,14 @@ export class UserService {
       throw new BadRequestException('User not found');
     }
     return this.toUserResponse(user);
+  }
+
+  async profile(email: string): Promise<UserResponse | null> {
+    const user = await this.findOneByEmail(email);
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
+    return user;
   }
 
   async update(id: number, updateUserDto: UpdateUserDto): Promise<UserResponse> {
@@ -75,12 +88,29 @@ export class UserService {
     return await this.findOne(id);
   }
 
+  async updateMe(userActive: UserActiveInterface, updateMeDto: UpdateMeDto): Promise<any> {
+    const user = await this.findOneByEmail(userActive.email);
+    const userUpdated = await this.update(user.id, updateMeDto);
+    if (user.email !== userUpdated.email) {
+      return {
+        userUpdated,
+        message: "You need to log in again"
+      }
+    }
+    return userUpdated;
+  }
+
   async remove(id: number): Promise<{ message: string } | UserResponse> {
     await this.findOne(id);
 
     await this.userRepository.softDelete({ id });
     
     return { message: 'User successfully deleted' };
+  }
+
+  async removeMe(userActive: UserActiveInterface): Promise<{ message: string } | UserResponse> {
+    const user = await this.findOneByEmail(userActive.email);
+    return this.remove(user?.id);
   }
 
   async hashPassword(password: string): Promise<string> {
@@ -101,7 +131,7 @@ export class UserService {
 
     const userExists  = await this.findOneByEmail(email);
 
-    if (userExists ) {
+    if (userExists) {
       throw new BadRequestException('User already exists');
     }
   }
