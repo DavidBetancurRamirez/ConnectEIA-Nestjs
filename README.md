@@ -5,12 +5,12 @@ Plantilla usada para proyectos de nest.js
 ## Ejecutar
 **Levantar BD con docker:**
 ```
-  docker compose up -d
+docker compose up -d
 ```
 
 **Descargar dependencias:**
 ```
-  npm i
+npm i
 ```
 
 **Variables necesarias en el .env para modo dev:**
@@ -62,16 +62,44 @@ Plantilla usada para proyectos de nest.js
 
 
 ## Info util
-**Generar un modulo por comandos:**
+### Crear nuevo proyecto basado en esta plantilla
+1. *Clonar la plantilla:*
 ```
-  nest g res name --no-spec
+git clone https://github.com/DavidBetancurRamirez/nestjs-plantilla.git nuevo-proyecto
 ```
 
-**Para implementar la autenticación en otro modulo:**
+2. *Agregar la plantilla como un repositorio remoto adicional (upstream):*
+```
+git remote add upstream https://github.com/DavidBetancurRamirez/nestjs-plantilla.git
+```
+
+3. *Obtener cambios de la plantilla (upstream):*
+```
+git fetch upstream
+```
+
+4. *Aplicar cambios de la plantilla (upstream):*
+```
+git merge upstream/main
+```
+O tambien:
+```
+git rebase upstream/main
+```
+
+5. *Resolver conflictos:*
+Puede que algunos cambios no se hagan de manera automatica y generen conflictos y halla que resolverlos y realizar un commit adicional
+
+### Generar un modulo por comandos:
+```
+nest g res name --no-spec
+```
+
+### Para implementar la autenticación en otro modulo:
 *example.module.ts*
 ```
-  @Module({
-    imports: [AuthModule],
-  })
-  export class ExampleModule {}
+@Module({
+  imports: [AuthModule],
+})
+export class ExampleModule {}
 ```
