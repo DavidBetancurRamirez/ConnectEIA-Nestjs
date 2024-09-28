@@ -27,12 +27,13 @@ npm i
 
 **Ejecutar modo dev:**
 ```
-  npm run dev
+npm run dev
 ```
 
 
 ## Contenido
 - *Documentación con swagger*
+- *Base de Datos con postgres (NoSQL)*
 - *Tipos de usuarios*
   1. **user:** por defecto
   2. **admin:** permiso para hacer todo
@@ -73,12 +74,14 @@ git clone https://github.com/DavidBetancurRamirez/nestjs-plantilla.git nuevo-pro
 git remote add upstream https://github.com/DavidBetancurRamirez/nestjs-plantilla.git
 ```
 
-3. *Obtener cambios de la plantilla (upstream):*
+---
+### Actualizar cambios desde la plantilla
+1. *Obtener cambios de la plantilla (upstream):*
 ```
 git fetch upstream
 ```
 
-4. *Aplicar cambios de la plantilla (upstream):*
+2. *Aplicar cambios de la plantilla (upstream):*
 ```
 git merge upstream/main
 ```
@@ -87,14 +90,16 @@ O tambien:
 git rebase upstream/main
 ```
 
-5. *Resolver conflictos:*
+3. *Resolver conflictos:*
 Puede que algunos cambios no se hagan de manera automatica y generen conflictos y halla que resolverlos y realizar un commit adicional
 
+---
 ### Generar un modulo por comandos:
 ```
 nest g res name --no-spec
 ```
 
+---
 ### Para implementar la autenticación en otro modulo:
 *example.module.ts*
 ```
