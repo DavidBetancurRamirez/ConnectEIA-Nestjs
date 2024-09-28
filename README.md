@@ -12,6 +12,18 @@ Backend para el proyecto de ConnectEIA
 
 
 ## Ejecutar
+**Variables necesarias en el .env para modo dev:**
+```
+DB_HOST=
+DB_PORT=
+DB_USERNAME=
+DB_PASSWORD=
+DB_NAME=
+DB_SSL=
+JWT_SECRET=
+JWT_REFRESH_SECRET=
+```
+
 **Levantar BD con docker:**
 ```
 docker compose up -d
@@ -20,18 +32,6 @@ docker compose up -d
 **Descargar dependencias:**
 ```
 npm i
-```
-
-**Variables necesarias en el .env para modo dev:**
-```
-  DB_HOST=
-  DB_PORT=
-  DB_USERNAME=
-  DB_PASSWORD=
-  DB_NAME=
-  DB_SSL=
-  JWT_SECRET=
-  JWT_REFRESH_SECRET=
 ```
 
 **Ejecutar modo dev:**
@@ -118,6 +118,15 @@ nest g res name --no-spec
 ```
 @Module({
   imports: [AuthModule],
+})
+export class ExampleModule {}
+```
+
+### Para usar modulo con entidad:
+*example.module.ts*
+```
+@Module({
+  imports: [TypeOrmModule.forFeature([Example])],
 })
 export class ExampleModule {}
 ```
