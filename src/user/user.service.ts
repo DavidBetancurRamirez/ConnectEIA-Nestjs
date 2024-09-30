@@ -43,13 +43,6 @@ export class UserService {
     return user ? this.toUserResponse(user) : null;
   }
 
-  async findByEmailWithPassword(email: string) {
-    return await this.userRepository.findOne({
-      where: { email },
-      select: ['id', 'name', 'email', 'password', 'roles'],
-    });
-  }
-
   async findAll() {
     return await this.userRepository.find({
       order: {
@@ -100,7 +93,7 @@ export class UserService {
     return userUpdated;
   }
 
-  async remove(id: number): Promise<{ message: string } | UserResponse> {
+  async remove(id: number): Promise<{ message: string }> {
     await this.findOne(id);
 
     await this.userRepository.softDelete({ id });
@@ -108,13 +101,34 @@ export class UserService {
     return { message: 'User successfully deleted' };
   }
 
-  async removeMe(userActive: UserActiveInterface): Promise<{ message: string } | UserResponse> {
+  async removeMe(userActive: UserActiveInterface): Promise<{ message: string }> {
     const user = await this.findOneByEmail(userActive.email);
     return this.remove(user?.id);
   }
 
   async hashPassword(password: string): Promise<string> {
     return await bcryptjs.hash(password, 10);
+  }
+
+  private async findByEmailWithPassword(email: string): Promise<User> {
+    const user = await this.findOneByEmail(email);
+    if (!user) {
+      return null;
+    }
+    
+    const userWithPassword = await this.userRepository.findOne({
+      where: { email },
+      select: ['password', 'deletedAt'],
+    });
+    if (!userWithPassword) {
+      return null;
+    }
+
+    return {
+      ...user,
+      password: userWithPassword.password,
+      deletedAt: userWithPassword.deletedAt
+    };
   }
 
   private toUserResponse(user: User): UserResponse {
