@@ -20,6 +20,9 @@ export class User {
   @Column({ nullable: false, select: false })
   password: string;
 
+  @Column({ nullable: true })
+  phone: string;
+
   @Column({ type: 'simple-enum', enum: Role, default: [Role.USER], array: true })
   roles: Role[];
 

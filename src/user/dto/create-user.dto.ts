@@ -16,6 +16,12 @@ export class CreateUserDto {
   @IsString()
   @MinLength(1)
   name?: string;
+  
+  @IsOptional()
+  @Transform(({ value }) => value.trim())
+  @IsString()
+  @MinLength(1)
+  phone?: string;
 
   @IsOptional()
   @Transform(({ value }) => value?.map((role: string) => role.trim()))
