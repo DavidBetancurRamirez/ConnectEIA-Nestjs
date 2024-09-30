@@ -27,6 +27,12 @@ export class Product {
   @Column("text", { array: true })
   images: string[];
 
+  @Column({ nullable: false })
+  new: boolean;
+
+  @Column({ nullable: false })
+  negotiable: boolean;
+
   @Column({ type: 'timestamp', nullable: false })
   last_update: Date;
 
