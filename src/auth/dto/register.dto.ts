@@ -8,4 +8,10 @@ export class RegisterDto extends LoginDto {
   @IsString()
   @MinLength(1)
   name?: string;
+  
+  @IsOptional()
+  @Transform(({ value }) => value.trim())
+  @IsString()
+  @MinLength(1)
+  phone?: string;
 }
