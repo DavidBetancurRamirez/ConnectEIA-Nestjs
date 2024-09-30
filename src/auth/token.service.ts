@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { UserPayload } from './interfaces/auth.interfaces';
+import { LoginResponse, UserPayload } from './interfaces/auth.interfaces';
 import { UserResponse } from '../common/interfaces/user.interface';
 
 @Injectable()
@@ -15,6 +15,12 @@ export class TokenService {
   ) {
     this.accessSecret = this.configService.get<string>('JWT_SECRET');
     this.refreshSecret = this.configService.get<string>('JWT_REFRESH_SECRET');
+  }
+
+  async generateTokens(user: UserResponse): Promise<LoginResponse> {
+    const accesToken = this.generateAccessToken(user);
+    const refreshToken = this.generateRefreshToken(user);
+    return { accesToken, refreshToken, data: user };
   }
 
   generateAccessToken(user: UserResponse): string {
