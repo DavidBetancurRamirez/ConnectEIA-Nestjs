@@ -12,3 +12,9 @@ export interface UserActiveInterface {
   email: string;
   roles: string[];
 }
+
+export interface LoginResponse {
+  accesToken: string;
+  refreshToken: string;
+  data: UserResponse;
+}

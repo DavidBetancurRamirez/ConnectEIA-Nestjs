@@ -4,7 +4,7 @@ import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
-import { LoginResponse } from './interfaces/auth.interfaces';
+import { LoginResponse } from 'src/common/interfaces/user.interface';
 
 @ApiTags('auth')
 @Controller('auth')
