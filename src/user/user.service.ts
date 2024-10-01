@@ -5,14 +5,17 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import * as bcryptjs from 'bcryptjs';
-import { UserResponse, UserActiveInterface } from '../common/interfaces/user.interface';
+import { UserResponse, UserActiveInterface, LoginResponse } from '../common/interfaces/user.interface';
 import { UpdateMeDto } from './dto/update-me.dto';
+import { TokenService } from '../auth/token.service';
+import { DeleteUserDto } from './dto/delete-user.dto';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
-    private readonly userRepository: Repository<User>
+    private readonly userRepository: Repository<User>,
+    private readonly tokenService: TokenService
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<UserResponse> {
@@ -24,7 +27,7 @@ export class UserService {
     return this.toUserResponse(userSave);
   }
 
-  async validateUser(email: string, password: string): Promise<UserResponse | null> {
+  async validateUser(email: string, password: string): Promise<UserResponse> {
     const user = await this.findByEmailWithPassword(email);
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
@@ -59,7 +62,7 @@ export class UserService {
     return this.toUserResponse(user);
   }
 
-  async profile(email: string): Promise<UserResponse | null> {
+  async profile(email: string): Promise<UserResponse> {
     const user = await this.findOneByEmail(email);
     if (!user) {
       throw new BadRequestException('User not found');
@@ -81,19 +84,15 @@ export class UserService {
     return await this.findOne(id);
   }
 
-  async updateMe(userActive: UserActiveInterface, updateMeDto: UpdateMeDto): Promise<any> {
-    const user = await this.findOneByEmail(userActive.email);
+  async updateMe(userActive: UserActiveInterface, updateMeDto: UpdateMeDto): Promise<UserResponse | LoginResponse> {
+    const user = await this.profile(userActive.email);
     const userUpdated = await this.update(user.id, updateMeDto);
-    if (user.email !== userUpdated.email) {
-      return {
-        userUpdated,
-        message: "You need to log in again"
-      }
-    }
-    return userUpdated;
+    return user.email != userUpdated.email 
+      ? await this.tokenService.generateTokens(userUpdated)
+      : userUpdated;
   }
 
-  async remove(id: number): Promise<{ message: string }> {
+  async remove(id: number): Promise<DeleteUserDto> {
     await this.findOne(id);
 
     await this.userRepository.softDelete({ id });
@@ -101,9 +100,9 @@ export class UserService {
     return { message: 'User successfully deleted' };
   }
 
-  async removeMe(userActive: UserActiveInterface): Promise<{ message: string }> {
-    const user = await this.findOneByEmail(userActive.email);
-    return this.remove(user?.id);
+  async removeMe(userActive: UserActiveInterface): Promise<DeleteUserDto> {
+    const user = await this.profile(userActive.email);
+    return this.remove(user.id);
   }
 
   async hashPassword(password: string): Promise<string> {
