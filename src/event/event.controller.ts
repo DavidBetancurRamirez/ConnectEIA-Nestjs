@@ -17,8 +17,8 @@ export class EventController {
 
   @Get(':id')
   @ApiOperation({ summary: 'Find Event' })
-  findOne(@Param('id') id: string) {
-    return this.eventService.findOne(+id);
+  findOne(@Param('id') id: number) {
+    return this.eventService.findOne(id);
   }
 
   @Post()
@@ -29,13 +29,13 @@ export class EventController {
 
   @Patch(':id')
   @ApiOperation({ summary: 'Edit Event' })
-  update(@Param('id') id: string, @Body() updateEventDto: UpdateEventDto) {
-    return this.eventService.update(+id, updateEventDto);
+  update(@Param('id') id: number, @Body() updateEventDto: UpdateEventDto) {
+    return this.eventService.update(id, updateEventDto);
   }
 
   @Delete(':id')
   @ApiOperation({ summary: 'Delete Event' })
-  remove(@Param('id') id: string) {
-    return this.eventService.remove(+id);
+  remove(@Param('id') id: number) {
+    return this.eventService.remove(id);
   }
 }

@@ -17,8 +17,8 @@ export class ReservationController {
 
   @Get(':id')
   @ApiOperation({ summary: 'Find Reservation' })
-  findOne(@Param('id') id: string) {
-    return this.reservationService.findOne(+id);
+  findOne(@Param('id') id: number) {
+    return this.reservationService.findOne(id);
   }
 
   @Post()
@@ -29,13 +29,13 @@ export class ReservationController {
 
   @Patch(':id')
   @ApiOperation({ summary: 'Edit Reservation' })
-  update(@Param('id') id: string, @Body() updateReservationDto: UpdateReservationDto) {
-    return this.reservationService.update(+id, updateReservationDto);
+  update(@Param('id') id: number, @Body() updateReservationDto: UpdateReservationDto) {
+    return this.reservationService.update(id, updateReservationDto);
   }
 
   @Delete(':id')
   @ApiOperation({ summary: 'Delete Reservation' })
-  remove(@Param('id') id: string) {
-    return this.reservationService.remove(+id);
+  remove(@Param('id') id: number) {
+    return this.reservationService.remove(id);
   }
 }
