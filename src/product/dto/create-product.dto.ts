@@ -1,32 +1,34 @@
 import { Transform } from "class-transformer";
-import { IsBoolean, IsNumber, IsOptional, IsString, MinLength } from "class-validator";
+import { IsArray, IsBoolean, IsNumber, IsOptional, IsString, Min, MinLength } from "class-validator";
+import { EachElementLenght } from "src/common/decorators/validate-each.decorator";
 
 export class CreateProductDto {
-  @Transform(({ value }) => value.trim())
   @IsString()
+  @Transform(({ value }) => value.trim())
   @MinLength(1)
   name: string;
 
-  @Transform(({ value }) => value.trim())
   @IsString()
+  @Transform(({ value }) => value.trim())
   @MinLength(1)
   description: string;
 
   @IsNumber()
+  @Min(0)
   price: number;
 
-  @Transform(({ value }) => value.trim())
-  @IsString()
-  @MinLength(1)
-  contact: string;
-
+  @IsOptional()
   @IsBoolean()
-  new: boolean;
-
-  @IsBoolean()
-  negotiable: boolean;
+  new?: boolean;
 
   @IsOptional()
-  @Transform(({ value }) => value?.map((img: string) => img.trim()))
+  @IsBoolean()
+  negotiable?: boolean;
+
+  @IsOptional()
+  @IsArray()
+  // @IsString({ each: true })
+  // @Transform(({ value }) => value ? value.map((img: string) => img.trim()) : [])
+  @EachElementLenght()
   images?: string[];
 }

@@ -4,7 +4,7 @@ import {
   DeleteDateColumn,
   Entity,
   ManyToOne,
-  PrimaryGeneratedColumn,
+  PrimaryGeneratedColumn
 } from 'typeorm';
 
 @Entity()
@@ -22,24 +22,21 @@ export class Product {
   price: number;
 
   @Column({ nullable: false })
-  contact: string;
-
-  @Column("text", { array: true })
-  images: string[];
-
-  @Column({ nullable: false })
   new: boolean;
 
   @Column({ nullable: false })
   negotiable: boolean;
 
-  @Column({ type: 'timestamp', nullable: false })
-  last_update: Date;
+  @Column('text', { array: true, nullable: false, default: '{}' })
+  images: string[];
 
   @ManyToOne(() => User, (user) => user.id, {
     eager: true
   })
   created_by: User;
+
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
+  last_update: Date;
 
   @DeleteDateColumn({ type: 'timestamp', select: false })
   deletedAt: Date;
