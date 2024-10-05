@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { UserPayload } from './interfaces/auth.interfaces';
+import { Payload } from './interfaces/auth.interface';
 import { LoginResponse, UserResponse } from '../common/interfaces/user.interface';
 
 @Injectable()
@@ -24,7 +24,7 @@ export class TokenService {
   }
 
   generateAccessToken(user: UserResponse): string {
-    const payload: UserPayload = { email: user.email, roles: user.roles };
+    const payload: Payload = { email: user.email, roles: user.roles };
     return this.jwtService.sign(payload, { secret: this.accessSecret, expiresIn: '1d' });
   }
 
@@ -33,7 +33,7 @@ export class TokenService {
     return this.jwtService.sign(payload, { secret: this.refreshSecret, expiresIn: '7d' });
   }
 
-  verifyAccessToken(token: string): UserPayload {
+  verifyAccessToken(token: string): Payload {
     try {
       return this.jwtService.verify(token, { secret: this.accessSecret });
     } catch {
@@ -41,7 +41,7 @@ export class TokenService {
     }
   }
 
-  verifyRefreshToken(token: string): UserPayload {
+  verifyRefreshToken(token: string): Payload {
     try {
       return this.jwtService.verify(token, { secret: this.refreshSecret });
     } catch {
