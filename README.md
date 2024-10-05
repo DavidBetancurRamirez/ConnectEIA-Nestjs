@@ -58,6 +58,7 @@ npm run dev
 ---
 ### User
 **Rutas:**
+
 *Requieren Rol user o admin*
 - **Get** *(/user) Profile:* Devuelve la informacion del usuario que hace la petición
 - **Patch** *(/user) Update:* Actualizar al usuario que hace la petición
