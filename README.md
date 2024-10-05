@@ -137,6 +137,7 @@ nest g res name --no-spec
 export class ExampleModule {}
 ```
 
+---
 ### Para usar modulo con entidad:
 *example.module.ts*
 ```
