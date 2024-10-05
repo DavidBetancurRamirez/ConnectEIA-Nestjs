@@ -76,6 +76,15 @@ npm run dev
 
 ---
 ### Product
+**Rutas:**
+
+*Requieren Rol user*
+- **Get** *(/product) Find Products:* Devuelve todos los productos
+- **Get** *(/product/my-products) Find My Products:* Devuelve todos los productos en que el que hace la peticion es el creador
+- **Get** *(/product/:id) Find Product:* Devuelve el producto con el id proporcionado
+- **Post** *(/product) Create Product:* Crear un producto
+- **Patch** *(/product/:id) Edit Product:* Editar el producto con el id proporcionado
+- **Delete** *(/product/:id) Delete Product:* Eliminar un producto con el id proporcionado
 
 ---
 ### Reservation
