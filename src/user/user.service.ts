@@ -1,14 +1,13 @@
-import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { User } from './entities/user.entity';
 import * as bcryptjs from 'bcryptjs';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { UserResponse, UserActiveInterface, LoginResponse } from '../common/interfaces/user.interface';
-import { UpdateMeDto } from './dto/update-me.dto';
+import { User } from './entities/user.entity';
 import { TokenService } from '../auth/token.service';
+import { CreateUserDto } from './dto/create-user.dto';
 import { DeleteUserDto } from './dto/delete-user.dto';
+import { UpdateUserDto, UpdateMeDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UserService {
@@ -22,9 +21,9 @@ export class UserService {
     await this.validateUserExist(createUserDto?.email);
 
     createUserDto.password = await this.hashPassword(createUserDto.password);
-    const userSave = await this.userRepository.save(createUserDto);
 
-    return this.toUserResponse(userSave);
+    const userSaved = await this.userRepository.save(createUserDto);
+    return this.toUserResponse(userSaved);
   }
 
   async validateUser(email: string, password: string): Promise<UserResponse> {
@@ -41,12 +40,7 @@ export class UserService {
     return this.toUserResponse(user);
   }
 
-  async findOneByEmail(email: string): Promise<UserResponse | null> {
-    const user = await this.userRepository.findOneBy({ email });
-    return user ? this.toUserResponse(user) : null;
-  }
-
-  async findAll() {
+  async findAll(): Promise<UserResponse[]> {
     return await this.userRepository.find({
       order: {
         id: 'ASC'
@@ -62,51 +56,9 @@ export class UserService {
     return this.toUserResponse(user);
   }
 
-  async profile(email: string): Promise<UserResponse> {
-    const user = await this.findOneByEmail(email);
-    if (!user) {
-      throw new BadRequestException('User not found');
-    }
-    return user;
-  }
-
-  async update(id: number, updateUserDto: UpdateUserDto): Promise<UserResponse> {
-    const existingUser = await this.findOne(id);
-
-    if (updateUserDto?.email !== existingUser?.email) await this.validateUserExist(updateUserDto?.email);
-
-    if (updateUserDto?.password) {
-      updateUserDto.password = await this.hashPassword(updateUserDto.password);
-    }
-
-    await this.userRepository.update(id, updateUserDto);
-
-    return await this.findOne(id);
-  }
-
-  async updateMe(userActive: UserActiveInterface, updateMeDto: UpdateMeDto): Promise<UserResponse | LoginResponse> {
-    const user = await this.profile(userActive.email);
-    const userUpdated = await this.update(user.id, updateMeDto);
-    return user.email != userUpdated.email 
-      ? await this.tokenService.generateTokens(userUpdated)
-      : userUpdated;
-  }
-
-  async remove(id: number): Promise<DeleteUserDto> {
-    await this.findOne(id);
-
-    await this.userRepository.softDelete({ id });
-    
-    return { message: 'User successfully deleted' };
-  }
-
-  async removeMe(userActive: UserActiveInterface): Promise<DeleteUserDto> {
-    const user = await this.profile(userActive.email);
-    return this.remove(user.id);
-  }
-
-  async hashPassword(password: string): Promise<string> {
-    return await bcryptjs.hash(password, 10);
+  async findOneByEmail(email: string): Promise<UserResponse | null> {
+    const user = await this.userRepository.findOneBy({ email });
+    return user ? this.toUserResponse(user) : null;
   }
 
   private async findByEmailWithPassword(email: string): Promise<User> {
@@ -130,22 +82,77 @@ export class UserService {
     };
   }
 
-  private toUserResponse(user: User): UserResponse {
+  async profile(email: string): Promise<UserResponse> {
+    const user = await this.findOneByEmail(email);
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
+    return user;
+  }
+
+  async update(id: number, updateUserDto: UpdateUserDto): Promise<UserResponse> {
+    const existingUser = await this.findOne(id);
+    return await this.updateUser(existingUser, updateUserDto);
+  }
+
+  async updateMe(userActive: UserActiveInterface, updateMeDto: UpdateMeDto): Promise<LoginResponse> {
+    const user = await this.profile(userActive.email);
+    const userUpdated = await this.updateUser(user, updateMeDto);
+
+    const tokens = user.email !== userUpdated.email 
+      ? await this.tokenService.generateTokens(userUpdated) 
+      : undefined;
+
     return {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      roles: user.roles
+      accesToken: tokens?.accesToken,
+      refreshToken: tokens?.refreshToken,
+      data: userUpdated
     };
   }
 
+  private async updateUser(user: UserResponse, updateUserDto: UpdateUserDto): Promise<UserResponse> {
+    if (updateUserDto?.email && updateUserDto.email !== user?.email) {
+      await this.validateUserExist(updateUserDto.email);
+    }
+
+    if (updateUserDto?.password) {
+      updateUserDto.password = await this.hashPassword(updateUserDto.password);
+    }
+
+    await this.userRepository.update(user.id, updateUserDto);
+    return await this.findOne(user.id);
+  }
+
+  async remove(id: number): Promise<DeleteUserDto> {
+    await this.findOne(id);
+    return this.removeUser(id);
+  }
+
+  async removeMe(userActive: UserActiveInterface): Promise<DeleteUserDto> {
+    const user = await this.profile(userActive.email);
+    return this.removeUser(user.id);
+  }
+
+  private async removeUser(id: number): Promise<DeleteUserDto> {
+    await this.userRepository.softDelete({ id });
+    return { message: 'User successfully deleted' };
+  }
+
+  async hashPassword(password: string): Promise<string> {
+    return await bcryptjs.hash(password, 10);
+  }
+
   private async validateUserExist(email: string) {
-    if (!email) return;
-
     const userExists  = await this.findOneByEmail(email);
-
     if (userExists) {
       throw new BadRequestException('User already exists');
     }
+  }
+
+  private toUserResponse(user: User): UserResponse {
+    delete user["password"];
+    delete user["deletedAt"];
+    
+    return user;
   }
 }
