@@ -21,6 +21,12 @@ async function bootstrap() {
     })
   );
 
+  app.enableCors({
+    origin: '*',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    allowedHeaders: 'Content-Type, Authorization',
+  });
+
   const config = new DocumentBuilder()
     .setTitle("ConnectEIA")
     .setDescription("Backend para el proyecto de ConnectEIA")
