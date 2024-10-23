@@ -13,7 +13,6 @@ import { DeleteProductDto } from './dto/delete-product.dto';
 
 @ApiTags('product')
 @ResponsesSecurity()
-@Auth([Role.USER])
 @Controller('product')
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
@@ -26,6 +25,7 @@ export class ProductController {
 
   @Get('my-products')
   @ApiOperation({ summary: 'Find My Products' })
+  @Auth([Role.USER])
   findMyProducts(@ActiveUser() userActive: UserActiveInterface): Promise<ProductResponse[]> {
     return this.productService.findAllByUser(userActive);
   }
@@ -38,6 +38,7 @@ export class ProductController {
 
   @Post()
   @ApiOperation({ summary: 'Create Product' })
+  @Auth([Role.USER])
   create(
     @ActiveUser() userActive: UserActiveInterface, 
     @Body() createProductDto: CreateProductDto
@@ -47,6 +48,7 @@ export class ProductController {
 
   @Patch(':id')
   @ApiOperation({ summary: 'Edit Product' })
+  @Auth([Role.USER])
   update(
     @Param('id') id: number, 
     @ActiveUser() userActive: UserActiveInterface, 
@@ -57,6 +59,7 @@ export class ProductController {
 
   @Delete(':id')
   @ApiOperation({ summary: 'Delete Product' })
+  @Auth([Role.USER])
   remove(
     @Param('id') id: number,
     @ActiveUser() userActive: UserActiveInterface, 
